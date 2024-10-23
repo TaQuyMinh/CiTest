@@ -21,17 +21,21 @@ namespace SWP391.EventFlowerExchange.API.Controllers
             _accountService = accountService;
         }
 
-        [HttpGet("ViewFollowerByUserId/{id}")]
+        [HttpGet("ViewFollowerByUserEmail/{email}")]
         [Authorize(Roles = ApplicationRoles.Buyer)]
-        public async Task<IActionResult> ViewFollowerByUserId(string id)
+        public async Task<IActionResult> ViewFollowerByUserEmail(string email)
         {
             Account acc = new Account();
-            acc.Id = id;
+            acc.Email = email;
 
-            var result = await _service.GetFollowerListFromApiAsync(acc);
-            if (result != null)
+            var check = await _accountService.GetUserByEmailFromAPIAsync(acc);
+            if (check != null)
             {
-                return Ok(result);
+                var result = await _service.GetFollowerListFromApiAsync(check);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
             }
 
             return Ok("Not found!");
@@ -42,12 +46,12 @@ namespace SWP391.EventFlowerExchange.API.Controllers
         public async Task<ActionResult<bool>> CreateFollow(CreateFollower follower)
         {
             Account acc = new Account();
-            acc.Id = follower.FollowerId;
-            var check1 = await _accountService.GetUserByIdFromAPIAsync(acc);
+            acc.Email = follower.FollowerEmail;
+            var check1 = await _accountService.GetUserByEmailFromAPIAsync(acc);
 
             Account acc2 = new Account();
-            acc.Id = follower.SellerId;
-            var check2 = await _accountService.GetUserByIdFromAPIAsync(acc2);
+            acc.Email = follower.SellerEmail;
+            var check2 = await _accountService.GetUserByEmailFromAPIAsync(acc2);
 
             if (check1 != null && check2 !=null)
             {
@@ -62,21 +66,21 @@ namespace SWP391.EventFlowerExchange.API.Controllers
             return false;
         }
 
-        [HttpDelete("RemoveFollower/{followerId}/{sellerId}")]
+        [HttpDelete("RemoveFollower/{followerEmail}/{sellerEmail}")]
         [Authorize(Roles = ApplicationRoles.Buyer)]
-        public async Task<ActionResult<bool>> RemoveAccount(string followerId, string sellerId)
+        public async Task<ActionResult<bool>> RemoveAccount(string followerEmail, string sellerEmail)
         {
             Account acc = new Account();
-            acc.Id = followerId;
-            var check1 = await _accountService.GetUserByIdFromAPIAsync(acc);
+            acc.Email = followerEmail;
+            var check1 = await _accountService.GetUserByEmailFromAPIAsync(acc);
 
             Account acc2 = new Account();
-            acc.Id = sellerId;
-            var check2 = await _accountService.GetUserByIdFromAPIAsync(acc2);
+            acc2.Email = sellerEmail;
+            var check2 = await _accountService.GetUserByEmailFromAPIAsync(acc2);
 
             if (check1 != null && check2 != null)
             {
-                ShopNotification cartItem = new ShopNotification() { FollowerId = followerId, SellerId = sellerId };
+                ShopNotification cartItem = new ShopNotification() { FollowerId = check1.Id, SellerId = check2.Id };
                 var result = await _service.RemoveFollowerFromApiAsync(cartItem);
                 if (result.Succeeded)
                 {

@@ -43,21 +43,22 @@ namespace SWP391.EventFlowerExchange.Application
         public async Task<IdentityResult> CreateCartItemFromApiAsync(CreateCartItem cartItem)
         {
             var allCarts = await _repo.ViewAllCartAsync();
-            var cart = allCarts.FirstOrDefault(c => c.BuyerId == cartItem.BuyerId);//néu không nhập buyerid thì xet như thế nào?
+            var user = await _accountRepository.GetUserByEmailAsync(new Account() { Email = cartItem.BuyerEmail });
+            var cart = allCarts.FirstOrDefault(c => c.BuyerId == user.Id.ToString());//néu không nhập buyerid thì xet như thế nào?
 
             if (cart == null)
             {
-                await _repo.CreateCartAsync(new Account() { Id = cartItem.BuyerId });
+                await _repo.CreateCartAsync(new Account() { Id = user.Id.ToString() });
                 allCarts = await _repo.ViewAllCartAsync();
-                cart = allCarts.FirstOrDefault(c => c.BuyerId == cartItem.BuyerId);
+                cart = allCarts.FirstOrDefault(c => c.BuyerId == user.Id.ToString());
             }
 
             var resultList = await _productRepository.GetInProgressProductListAsync();
             var result = resultList.FirstOrDefault(c => c.ProductId == cartItem.ProductId);
 
-            if (result != null)
+            if (result != null && result.Status.Contains("Enable"))
             {
-                var itemList = await _repo.ViewAllCartItemByUserIdAsync(new Account() { Id = cartItem.BuyerId });
+                var itemList = await _repo.ViewAllCartItemByUserIdAsync(new Account() { Id = user.Id });
                 var existingItem = itemList.FirstOrDefault(c => c.ProductId == result.ProductId);
 
                 var productImage = await _productRepository.SearchProductImageByIdAsync(result);
@@ -67,7 +68,7 @@ namespace SWP391.EventFlowerExchange.Application
                     var newItem = new CartItem
                     {
                         CartId = cart.CartId,
-                        BuyerId = cartItem.BuyerId,
+                        BuyerId = user.Id,
                         ProductId = cartItem.ProductId,
                         Quantity = 1,
                         Price = result.Price,

@@ -19,6 +19,8 @@ public partial class Order
 
     public DateTime? CreatedAt { get; set; }
 
+    public DateTime? UpdateAt {  get; set; }
+
     public string? DeliveredAt { get; set; }
     public string? PhoneNumber { get; set; }
 

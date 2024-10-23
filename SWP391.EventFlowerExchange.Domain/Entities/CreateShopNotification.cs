@@ -10,10 +10,10 @@ namespace SWP391.EventFlowerExchange.Domain.Entities
     public class CreateShopNotification
     {
         [Required(ErrorMessage = "FollowerId is required.")]
-        public string? FollowerId { get; set; }
+        public string? FollowerEmail { get; set; }
 
         [Required(ErrorMessage = "SellerId is required.")]
-        public string? SellerId { get; set; }
+        public string? SellerEmail { get; set; }
 
         public int? ProductId { get; set; }
 

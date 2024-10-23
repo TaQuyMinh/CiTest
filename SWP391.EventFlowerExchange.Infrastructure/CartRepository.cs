@@ -30,7 +30,7 @@ namespace SWP391.EventFlowerExchange.Infrastructure
                 BuyerId = account.Id,
             };
 
-            await _context.Carts.AddAsync(newCart);
+            _context.Carts.Add(newCart);
             int result = await _context.SaveChangesAsync();
 
             if (result > 0)

@@ -12,10 +12,12 @@ namespace SWP391.EventFlowerExchange.API.Controllers
     public class NotificationController : ControllerBase
     {
         private INotificationService _service;
+        private IAccountService _accountService;
 
-        public NotificationController(INotificationService service)
+        public NotificationController(INotificationService service, IAccountService accountService)
         {
             _service = service;
+            _accountService = accountService;
         }
 
         [HttpGet("ViewAllNotification")]
@@ -32,17 +34,21 @@ namespace SWP391.EventFlowerExchange.API.Controllers
             }
         }
 
-        [HttpGet("ViewNotificationByUserId/{id}")]
+        [HttpGet("ViewNotificationByUserEmail/{email}")]
         [Authorize(Roles = ApplicationRoles.Seller + " , " + ApplicationRoles.Buyer)]
-        public async Task<IActionResult> ViewNotificationByUserId(string id)
+        public async Task<IActionResult> ViewNotificationByUserEmail(string email)
         {
             Account acc = new Account();
-            acc.Id = id;
+            acc.Email = email;
 
-            var result = await _service.ViewAllNotificationByUserIdFromApiAsync(acc);
-            if (result != null)
+            var check = await _accountService.GetUserByEmailFromAPIAsync(acc);
+            if (check != null)
             {
-                return Ok(result);
+                var result = await _service.ViewAllNotificationByUserIdFromApiAsync(check);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
             }
 
             return Ok("Not found!");
@@ -97,17 +103,21 @@ namespace SWP391.EventFlowerExchange.API.Controllers
             }
         }
 
-        [HttpGet("ViewShopNotificationByUserId/{id}")]
+        [HttpGet("ViewShopNotificationByUserEmail/{email}")]
         [Authorize(Roles = ApplicationRoles.Seller)]
-        public async Task<IActionResult> ViewShopNotificationByUserId(string id)
+        public async Task<IActionResult> ViewShopNotificationByUserEmail(string email)
         {
             Account acc = new Account();
-            acc.Id = id;
+            acc.Email = email;
 
-            var result = await _service.ViewAllShopNotificationByUserIdFromApiAsync(acc);
-            if (result != null)
+            var check = await _accountService.GetUserByEmailFromAPIAsync(acc);
+            if (check != null)
             {
-                return Ok(result);
+                var result = await _service.ViewAllShopNotificationByUserIdFromApiAsync(check);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
             }
 
             return Ok("Not found!");

@@ -25,9 +25,11 @@ namespace SWP391.EventFlowerExchange.Infrastructure
         {
             _context = new Swp391eventFlowerExchangePlatformContext();
 
+            var user = _context.Accounts.FirstOrDefault(x => x.Email == notification.UserEmail);
+
             var noti = new Notification
             {
-                UserId = notification.UserId,
+                UserId = user.Id,
                 Content = notification.Content,
                 CreatedAt = DateTime.UtcNow,
                 Status = "enable"
@@ -48,11 +50,15 @@ namespace SWP391.EventFlowerExchange.Infrastructure
         {
             _context = new Swp391eventFlowerExchangePlatformContext();
 
+            var user = _context.Accounts.FirstOrDefault(x => x.Email == notification.FollowerEmail);
+
+            var user2 = _context.Accounts.FirstOrDefault(x => x.Email ==notification.SellerEmail);
+
             var noti = new ShopNotification
             {
-                SellerId = notification.SellerId,
+                SellerId = user.Id,
                 ProductId = notification.ProductId,
-                FollowerId = notification.FollowerId,
+                FollowerId = user2.Id,
                 Content = notification.Content,
                 CreatedAt = DateTime.UtcNow,
                 Status = "enable"

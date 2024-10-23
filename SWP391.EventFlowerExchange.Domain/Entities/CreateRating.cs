@@ -14,7 +14,7 @@ namespace SWP391.EventFlowerExchange.Domain.Entities
 
         [Required]
         [StringLength(100)]
-        public string? BuyerId { get; set; }
+        public string? BuyerEmail { get; set; }
 
         [Range(1, 5)]
         public int? Rating { get; set; }

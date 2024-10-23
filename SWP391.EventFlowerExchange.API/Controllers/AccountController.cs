@@ -144,7 +144,7 @@ namespace SWP391.EventFlowerExchange.API.Controllers
 
 
         [HttpGet("GetAccountByEmail/{email}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<Account>> GetAccountByEmailFromAPIAsync(string email)
         {
             var account = await _service.GetUserByEmailFromAPIAsync(new Account() { Email = email });

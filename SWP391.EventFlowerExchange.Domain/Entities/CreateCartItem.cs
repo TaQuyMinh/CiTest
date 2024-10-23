@@ -14,6 +14,6 @@ namespace SWP391.EventFlowerExchange.Domain.Entities
         public int ProductId { get; set; }
 
         [Required]
-        public string BuyerId { get; set; }
+        public string BuyerEmail { get; set; }
     }
 }

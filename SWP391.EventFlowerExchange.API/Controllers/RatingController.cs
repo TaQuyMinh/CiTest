@@ -21,17 +21,21 @@ namespace SWP391.EventFlowerExchange.API.Controllers
             _accountService = accountService;
         }
 
-        [HttpGet("ViewRatingByUserId/{id}")]
+        [HttpGet("ViewRatingByUserEmail/{email}")]
         [Authorize]
-        public async Task<IActionResult> ViewRatingByUserId(string id)
+        public async Task<IActionResult> ViewRatingByUserEmail(string email)
         {
             Account acc = new Account();
-            acc.Id = id;
+            acc.Email = email;
 
-            var result = await _service.ViewAllRatingByUserIdFromApiAsync(acc);
-            if (result != null)
+            var check = await _accountService.GetUserByEmailFromAPIAsync(acc);
+            if (check != null)
             {
-                return Ok(result);
+                var result = await _service.ViewAllRatingByUserIdFromApiAsync(check);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
             }
 
             return Ok("Not found!");
@@ -42,8 +46,8 @@ namespace SWP391.EventFlowerExchange.API.Controllers
         public async Task<ActionResult<bool>> PostRating(CreateRating rate)
         {
             Account acc = new Account();
-            acc.Id = rate.BuyerId;
-            var deleteAccount = await _accountService.GetUserByIdFromAPIAsync(acc);
+            acc.Email = rate.BuyerEmail;
+            var deleteAccount = await _accountService.GetUserByEmailFromAPIAsync(acc);
 
             if (deleteAccount != null)
             {

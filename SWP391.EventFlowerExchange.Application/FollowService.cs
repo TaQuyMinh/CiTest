@@ -23,9 +23,9 @@ namespace SWP391.EventFlowerExchange.Application
 
         public async Task<IdentityResult> AddNewFollowerFromApiAsync(CreateFollower follower)
         {
-            Account check = new Account() { Id = follower.FollowerId };
+            Account check = new Account() { Email = follower.FollowerEmail };
 
-            var result = _accountRepository.GetUserByIdAsync(check);
+            var result = _accountRepository.GetUserByEmailAsync(check);
             if (result == null)
             {
                 return IdentityResult.Failed(new IdentityError() { Description = "User not found" });

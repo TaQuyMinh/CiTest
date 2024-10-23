@@ -12,39 +12,42 @@ namespace SWP391.EventFlowerExchange.API.Controllers
     public class CartController : ControllerBase
     {
         private ICartService _service;
-        private IAccountService _accountService;
+        private IAccountRepository _accountService;
 
-        public CartController(ICartService service, IAccountService accountService)
+        public CartController(ICartService service, IAccountRepository accountService)
         {
             _service = service;
             _accountService = accountService;
         }
 
-        [HttpGet("ViewCartByUserId/{id}")]
+        /*[HttpGet("ViewCartByUserEmail/{email}")]
         [Authorize(Roles = ApplicationRoles.Buyer)]
-        public async Task<IActionResult> ViewCartByUserId(string id)
+        public async Task<IActionResult> ViewCartByUserEmail(string email)
         {
             Account acc = new Account();
-            acc.Id = id;
+            acc.Email = email;
 
-            var result = await _service.ViewAllCartItemByUserIdFromApiAsync(acc);
-            if (result != null)
+            var check = await _accountService.GetUserByEmailFromAPIAsync(acc);
+            if (check != null)
             {
-                return Ok(result);
+                var result = await _service.ViewAllCartItemByUserIdFromApiAsync(check);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
             }
 
             return Ok("Not found!");
-        }
+        }*/
 
         [HttpPost("CreateCartItem")]
-        [Authorize(Roles = ApplicationRoles.Manager + " , " +ApplicationRoles.Staff)]
+        //[Authorize(Roles = ApplicationRoles.Buyer)]
         public async Task<ActionResult<bool>> CreateCartItem(CreateCartItem cartItem)
         {
-            Account acc = new Account();
-            acc.Id = cartItem.BuyerId;
-            var deleteAccount = await _accountService.GetUserByIdFromAPIAsync(acc);
+            Account acc = new Account() { Email = cartItem.BuyerEmail };
+            Account account = await _accountService.GetUserByEmailAsync(acc);
 
-            if (deleteAccount != null)
+            if (account != null)
             {
                 var result = await _service.CreateCartItemFromApiAsync(cartItem);
                 if (result.Succeeded)
@@ -54,17 +57,17 @@ namespace SWP391.EventFlowerExchange.API.Controllers
                 return false;
             }
 
-            return false; 
+            return false;
         }
 
-        [HttpPost("CreateCartByUserId/{id}")]
-        [Authorize(Roles = ApplicationRoles.Buyer)]
-        public async Task<ActionResult<bool>> CreateCartByUserId(string id)
+        [HttpPost("CreateCartByUserEmail/{email}")]
+        //[Authorize(Roles = ApplicationRoles.Buyer)]
+        public async Task<ActionResult<bool>> CreateCartByUserEmail(string email)
         {
             Account acc = new Account();
-            acc.Id = id;
-            var account = await _accountService.GetUserByIdFromAPIAsync(acc);
+            acc.Email = email;
 
+            var account = await _accountService.GetUserByEmailAsync(acc);
             if (account != null)
             {
                 var result = await _service.CreateCartFromApiAsync(account);
@@ -78,17 +81,17 @@ namespace SWP391.EventFlowerExchange.API.Controllers
             return false;
         }
 
-        [HttpDelete("RemoveCartItem/{id}/{productid}")]
+        /*[HttpDelete("RemoveCartItem/{userEmail}/{productid}")]
         [Authorize(Roles = ApplicationRoles.Buyer)]
-        public async Task<ActionResult<bool>> RemoveCartItem(string id,int productid)
+        public async Task<ActionResult<bool>> RemoveCartItem(string userEmail, int productId)
         {
             Account acc = new Account();
-            acc.Id = id;
-            var deleteAccount = await _accountService.GetUserByIdFromAPIAsync(acc);
+            acc.Email = userEmail;
 
+            var deleteAccount = await _accountService.GetUserByEmailFromAPIAsync(acc);
             if (deleteAccount != null)
             {
-                CartItem cartItem = new CartItem() { BuyerId=id, ProductId=productid };
+                CartItem cartItem = new CartItem() { BuyerId = deleteAccount.Id, ProductId = productId };
                 var result = await _service.RemoveItemFromCartFromApiAsync(cartItem);
                 if (result.Succeeded)
                 {
@@ -97,6 +100,6 @@ namespace SWP391.EventFlowerExchange.API.Controllers
             }
 
             return false;
-        }
+        }*/
     }
 }

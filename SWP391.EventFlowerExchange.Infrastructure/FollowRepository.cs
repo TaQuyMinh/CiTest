@@ -24,25 +24,27 @@ namespace SWP391.EventFlowerExchange.Infrastructure
         {
             _context = new Swp391eventFlowerExchangePlatformContext();
 
-            var foAccount = _context.Accounts.FirstOrDefault(x => x.Id == follower.FollowerId);
+            var user = _context.Accounts.FirstOrDefault(x => x.Email == follower.FollowerEmail);
+
+            var user2 = _context.Accounts.FirstOrDefault(x => x.Email == follower.SellerEmail);
 
             var noti = new ShopNotification
             {
-                SellerId = follower.SellerId,
-                FollowerId = follower.FollowerId,
-                Content = $"{foAccount.Name} has followed you.",
+                SellerId = user2.Id,
+                FollowerId = user.Id,
+                Content = $"{user.Name} has followed you.",
                 CreatedAt = DateTime.UtcNow,
                 Status = "enable"
             };
 
             var fo = new Follow
             {
-                FollowerId = follower.FollowerId,
-                SellerId = follower.SellerId
+                FollowerId = user.Id,
+                SellerId = user2.Id
             };
             
             await _context.ShopNotifications.AddAsync(noti);
-            await _context.Follows.AddAsync(fo);
+            //await _context.Follows.AddAsync(fo);
 
             int result = await _context.SaveChangesAsync();
 
@@ -56,31 +58,31 @@ namespace SWP391.EventFlowerExchange.Infrastructure
 
         public async Task<List<Follow>> GetFollowerListAsync(Account account)
         {
-            _context = new Swp391eventFlowerExchangePlatformContext();
+            //_context = new Swp391eventFlowerExchangePlatformContext();
 
-            var list = await _context.Follows
-                .Where(x => x.SellerId == account.Id).ToListAsync();
-            if (list != null)
-            {
-                return list;
-            }
+            //var list = await _context.Follows
+            //    .Where(x => x.SellerId == account.Id).ToListAsync();
+            //if (list != null)
+            //{
+            //    return list;
+            //}
 
             return null;
         }
 
         public async Task<IdentityResult> RemoveFollowerAsync(ShopNotification follower)
         {
-            _context = new Swp391eventFlowerExchangePlatformContext();
+            //_context = new Swp391eventFlowerExchangePlatformContext();
 
-            var disableFollower = _context.ShopNotifications
-                .FirstOrDefault(x => x.FollowerId == follower.FollowerId && x.SellerId == follower.SellerId 
-                && !x.ProductId.HasValue);
-            var removeFollower = _context.Follows
-                .FirstOrDefault(x => x.SellerId == follower.SellerId && x.FollowerId == follower.FollowerId);
+            //var disableFollower = _context.ShopNotifications
+            //    .FirstOrDefault(x => x.FollowerId == follower.FollowerId && x.SellerId == follower.SellerId 
+            //    && !x.ProductId.HasValue);
+            //var removeFollower = _context.Follows
+            //    .FirstOrDefault(x => x.SellerId == follower.SellerId && x.FollowerId == follower.FollowerId);
 
-            disableFollower.Status = "disable";
-            _context.Follows.Remove(removeFollower);
-            await _context.SaveChangesAsync();
+            //disableFollower.Status = "disable";
+            //_context.Follows.Remove(removeFollower);
+            //await _context.SaveChangesAsync();
 
             return IdentityResult.Success;   
         }

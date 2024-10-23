@@ -11,6 +11,8 @@ public partial class Product
 
     public string? ProductName { get; set; }
 
+    public string? Description { get; set; }
+
     public int? FreshnessDuration { get; set; }
 
     public string? ComboType { get; set; }

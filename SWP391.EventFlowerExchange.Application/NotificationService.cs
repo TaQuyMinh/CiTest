@@ -23,9 +23,9 @@ namespace SWP391.EventFlowerExchange.Application
 
         public async Task<IdentityResult> CreateNotificationFromApiAsync(CreateNotification notification)
         {
-            Account check=new Account() { Id=notification.UserId };
+            Account check=new Account() { Email = notification.UserEmail };
 
-            var result= _accountRepository.GetUserByIdAsync(check);
+            var result= _accountRepository.GetUserByEmailAsync(check);
             if (result == null) 
             {
                 return IdentityResult.Failed(new IdentityError() { Description = "User not found" });
@@ -36,9 +36,9 @@ namespace SWP391.EventFlowerExchange.Application
 
         public async Task<IdentityResult> CreateShopNotificationFromApiAsync(CreateShopNotification notification)
         {
-            Account check = new Account() { Id = notification.SellerId };
+            Account check = new Account() { Email = notification.SellerEmail };
 
-            var result = _accountRepository.GetUserByIdAsync(check);
+            var result = _accountRepository.GetUserByEmailAsync(check);
             if (result == null)
             {
                 return IdentityResult.Failed(new IdentityError() { Description = "User not found" });

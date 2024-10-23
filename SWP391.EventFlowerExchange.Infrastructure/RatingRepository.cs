@@ -24,11 +24,13 @@ namespace SWP391.EventFlowerExchange.Infrastructure
         {
             _context = new Swp391eventFlowerExchangePlatformContext();
 
+            var user = _context.Accounts.FirstOrDefault(x => x.Email == rating.BuyerEmail);
+
             // Tạo giỏ hàng mới
             var newRating = new Review
             {
                 OrderId = rating.OrderId,
-                BuyerId = rating.BuyerId,
+                BuyerId = user.Id,
                 Rating = rating.Rating,
                 Comment = rating.Comment,
                 CreatedAt = DateTime.UtcNow

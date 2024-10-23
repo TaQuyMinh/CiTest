@@ -19,7 +19,6 @@ public partial class Swp391eventFlowerExchangePlatformContext : IdentityDbContex
         : base(options)
     {
     }
-    public virtual DbSet<Follow> Follows { get; set; }
 
     public virtual DbSet<Account> Accounts { get; set; }
 
@@ -47,7 +46,6 @@ public partial class Swp391eventFlowerExchangePlatformContext : IdentityDbContex
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
 
-    
     public virtual DbSet<ImageProduct> ImageProducts { get; set; }
 
 
@@ -105,24 +103,6 @@ public partial class Swp391eventFlowerExchangePlatformContext : IdentityDbContex
         //    entity.Property(e => e.Status).HasColumnName("status");
         //});
 
-        modelBuilder.Entity<Follow>(entity =>
-        {
-            entity.HasKey(e => e.FollowId).HasName("PK__Follow__15A691443703BF66");
-
-            entity.ToTable("Follow");
-
-            entity.HasIndex(e => new { e.FollowerId, e.SellerId }, "IX_Follow_Unique").IsUnique();
-
-            entity.Property(e => e.FollowId).HasColumnName("follow_id");
-            entity.Property(e => e.FollowerId).HasColumnName("follower_id");
-            entity.Property(e => e.SellerId).HasColumnName("seller_id");
-
-            entity.HasOne(d => d.Seller).WithMany(p => p.Follows)
-                .HasForeignKey(d => d.SellerId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Follow__seller_i__395884C4");
-        });
-
         modelBuilder.Entity<Cart>(entity =>
         {
             entity.HasKey(e => new { e.CartId, e.BuyerId }).HasName("PK__Cart__15583D3220AC18D4");
@@ -175,6 +155,9 @@ public partial class Swp391eventFlowerExchangePlatformContext : IdentityDbContex
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.DeliveryAt)
+                .HasColumnType("datetime")
+                .HasColumnName("delivery_at");
             entity.Property(e => e.DeliveryPersonId).HasColumnName("delivery_person_id");
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.PhotoUrl)
@@ -230,16 +213,19 @@ public partial class Swp391eventFlowerExchangePlatformContext : IdentityDbContex
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.UpdateAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
             entity.Property(e => e.DeliveredAt)
                 .HasColumnName("delivered_at");
-            entity.Property(e => e.PhoneNumber)
-                .HasColumnName("phoneNumber");
             entity.Property(e => e.DeliveryPersonId).HasColumnName("delivery_person_id");
             entity.Property(e => e.IssueReport).HasColumnName("issue_report");
             entity.Property(e => e.SellerId).HasColumnName("seller_id");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
+            entity.Property(e => e.PhoneNumber)
+                .HasColumnName("phoneNumber");
             entity.Property(e => e.TotalPrice)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("total_price");
@@ -311,7 +297,11 @@ public partial class Swp391eventFlowerExchangePlatformContext : IdentityDbContex
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
-
+            entity.Property(e => e.Description)
+                .HasColumnName("description");
+            entity.Property(e => e.Category)
+                .HasMaxLength(50)
+                .HasColumnName("category");
             entity.HasOne(d => d.Seller).WithMany(p => p.Products)
                 .HasForeignKey(d => d.SellerId)
                 .HasConstraintName("FK__Product__seller___3B75D760");
@@ -482,6 +472,8 @@ public partial class Swp391eventFlowerExchangePlatformContext : IdentityDbContex
 
         modelBuilder.Entity<ImageProduct>(entity =>
         {
+            entity.ToTable("ImageProduct");
+
             entity.HasKey(e => e.Id).HasName("PK__ImagePro__3213E83FBC8D53A3");
 
             entity.Property(e => e.LinkImage).HasMaxLength(450);
@@ -496,4 +488,5 @@ public partial class Swp391eventFlowerExchangePlatformContext : IdentityDbContex
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
 }
